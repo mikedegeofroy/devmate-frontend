@@ -55,7 +55,9 @@ const components: { title: string; href: string; description: string }[] = [
 export function Navbar() {
   return (
     <NavigationMenu className='p-5 fixed w-full max-w-none justify-between'>
-      <Icons.apple className='h-6 w-6 mr-20' />
+      <h1 className='text-2xl font-semibold'>
+        DevM8
+      </h1>
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
