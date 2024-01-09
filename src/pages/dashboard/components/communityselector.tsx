@@ -27,8 +27,9 @@ import {
 import { useState, useEffect } from 'react';
 
 export const CommunitySelector = () => {
-  const [data, setData] = useState<IPeer[]>([]);
   const [communities, setSelected] = useAnalyticsStore((state) => [state.communities, state.setCommunities]);
+  
+  const [data, setData] = useState<IPeer[]>([]);
   const [open, setOpen] = useState(communities.length == 0);
 
   const columns: ColumnDef<IPeer>[] = [
@@ -78,6 +79,11 @@ export const CommunitySelector = () => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      rowSelection: {
+        '0': true
+      }
+    }
   });
 
   useEffect(() => {
@@ -92,8 +98,6 @@ export const CommunitySelector = () => {
         })
         .catch((err) => console.error('error:' + err));
     };
-
-    if (table.getSelectedRowModel().rows.length == 0) setOpen(true);
 
     fetchData();
   }, [setSelected, table]);
