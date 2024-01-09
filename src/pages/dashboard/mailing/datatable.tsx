@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { IUser } from '@/models/IUser';
+import { IPeer } from '@/models/IPeer';
 import { flexRender, Table as TableProp } from '@tanstack/react-table';
 
 interface IDataTableProps {
-  table: TableProp<IUser>;
+  table: TableProp<IPeer>;
 }
 
 export const DataTable = ({ table }: IDataTableProps) => {

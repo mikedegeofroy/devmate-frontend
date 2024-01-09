@@ -6,19 +6,27 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useEffect, useState } from 'react';
-import { IUser } from '@/models/IUser';
+import { IPeer } from '@/models/IPeer';
 import { Checkbox } from '@/components/ui/checkbox';
-import { MessageEditor } from './MessageEditor';
-import { DataTable } from './DataTable';
+import { MessageEditor } from './messageeditor';
+import { DataTable } from './datatable';
+import { useAnalyticsStore } from '@/store/analytics.store';
 
 export const Mailing = (props: ITab) => {
-  const [data, setData] = useState<IUser[]>([]);
+  const communities = useAnalyticsStore((store) => store.communities);
+
+  const [data, setData] = useState<IPeer[]>([]);
 
   useEffect(() => {
-    const url = 'http://localhost:5207/api/useractivitydata';
+    const url = `http://localhost:5207/api/UserActivityData?id=${communities[0].id}`;
 
     const fetchData = () => {
-      fetch(url)
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
         .then((res) => res.json())
         .then((json) => {
           setData(json);
@@ -26,10 +34,10 @@ export const Mailing = (props: ITab) => {
         .catch((err) => console.error('error:' + err));
     };
 
-    fetchData();
-  }, []);
+    if (communities.length > 0) fetchData();
+  }, [communities]);
 
-  const columns: ColumnDef<IUser>[] = [
+  const columns: ColumnDef<IPeer>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -67,7 +75,10 @@ export const Mailing = (props: ITab) => {
   });
 
   return (
-    <TabsContent className='grid gap-5 md:grid-cols-5 h-full' value={props.value}>
+    <TabsContent
+      className='grid gap-5 md:grid-cols-5 h-full'
+      value={props.value}
+    >
       <DataTable table={table} />
       <MessageEditor
         recipients={table.getSelectedRowModel().rows.flatMap((x) => x.original)}

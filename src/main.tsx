@@ -5,12 +5,14 @@ import './index.css';
 import { Dashboard } from '@/pages/dashboard';
 import { Navbar } from '@/components/navbar';
 import { Landing } from '@/pages/landing';
-import { Toaster } from './components/ui/toaster';
+import { Toaster } from '@/components/ui/sonner';
+import { Page404 } from '@/pages/404';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Landing />,
+    errorElement: <Page404 />,
   },
   {
     path: '/dashboard',

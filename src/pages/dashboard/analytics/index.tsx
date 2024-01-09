@@ -8,15 +8,18 @@ import { ChatGpt } from './gpt/chatgpt';
 import { ActiveMembers } from './activity/activememebers';
 import { useEffect, useState } from 'react';
 import { IAnalyticsData } from '@/models/IAnalyticsData';
+import { useAnalyticsStore } from '@/store/analytics.store';
 
 export const Analytics = (props: ITab) => {
+  const communities = useAnalyticsStore(store => store.communities);
+
   const [data, setData] = useState<IAnalyticsData>({
     dataPoints: [],
     total: 0,
   });
 
   useEffect(() => {
-    const url = 'http://localhost:5207/api/ActivityData?id=1600634396';
+    const url = `http://localhost:5207/api/ActivityData?id=${communities[0].id}`;
 
     const fetchData = () => {
       fetch(url, {
@@ -45,8 +48,9 @@ export const Analytics = (props: ITab) => {
         .catch((err) => console.error('error:' + err));
     };
 
-    fetchData();
-  }, []);
+    if (communities.length > 0)
+      fetchData();
+  }, [communities]);
 
   return (
     <TabsContent className='grid gap-5 md:grid-cols-4' value={props.value}>

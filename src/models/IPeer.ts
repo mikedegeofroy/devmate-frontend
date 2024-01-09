@@ -1,4 +1,4 @@
-export interface IUser {
+export interface IPeer {
   id: number,
   username: string,
   displayName: string,

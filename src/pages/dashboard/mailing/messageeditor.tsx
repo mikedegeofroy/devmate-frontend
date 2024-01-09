@@ -2,17 +2,16 @@ import { Icons } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
-import { IUser } from '@/models/IUser';
+import { toast } from 'sonner';
+import { IPeer } from '@/models/IPeer';
 import { useState } from 'react';
 
 interface IMessageEditorProps {
-  recipients: IUser[];
+  recipients: IPeer[];
 }
 
 export const MessageEditor = (props: IMessageEditorProps) => {
   const [message, setMessage] = useState('');
-  const { toast } = useToast();
 
   const sendMessage = async (message: string) => {
     const url = `http://localhost:5207/api/Mailing?message=${message}`;
@@ -26,8 +25,7 @@ export const MessageEditor = (props: IMessageEditorProps) => {
     });
 
     console.log(response);
-    toast({
-      title: 'Sent!',
+    toast('Sent!', {
       duration: 800,
     });
   };
