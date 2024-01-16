@@ -3,9 +3,11 @@ import { Analytics } from './analytics';
 import { Mailing } from './mailing';
 import { Icons } from '@/components/icons';
 import { CommunitySelector } from './components/communityselector';
-import { useAnalyticsStore } from '@/store/analytics.store';
+import { Events } from './events';
 
 export const Dashboard = () => {
+  const loading = true;
+
   return (
     <div className='pt-20 px-5 h-full'>
       <Tabs className='h-full w-full' defaultValue='analytics'>
@@ -13,16 +15,18 @@ export const Dashboard = () => {
           <TabsList>
             <TabsTrigger value='analytics'>Analytics</TabsTrigger>
             <TabsTrigger value='mailing'>Mailer</TabsTrigger>
+            <TabsTrigger value='events'>Events</TabsTrigger>
           </TabsList>
           <CommunitySelector />
           <Icons.loading
             className={`w-4 h-4 animate-spin ml-auto mr-2 ${
-              useAnalyticsStore((state) => state.loading) ? '' : 'hidden'
+              loading ? '' : 'hidden'
             }`}
           />
         </div>
         <Analytics value='analytics' />
         <Mailing value='mailing' />
+        <Events value='events' />
       </Tabs>
     </div>
   );

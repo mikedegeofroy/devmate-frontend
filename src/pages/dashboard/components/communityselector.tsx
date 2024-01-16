@@ -16,6 +16,7 @@ import {
   TableCell,
   Table,
 } from '@/components/ui/table';
+import { usePeers } from '@/hooks/usePeers';
 import { IPeer } from '@/models/IPeer';
 import { useAnalyticsStore } from '@/store/analytics.store';
 import {
@@ -24,12 +25,15 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const CommunitySelector = () => {
-  const [communities, setSelected] = useAnalyticsStore((state) => [state.communities, state.setCommunities]);
-  
-  const [data, setData] = useState<IPeer[]>([]);
+  const [communities, setSelected] = useAnalyticsStore((state) => [
+    state.communities,
+    state.setCommunities,
+  ]);
+
+  const { data } = usePeers();
   const [open, setOpen] = useState(communities.length == 0);
 
   const columns: ColumnDef<IPeer>[] = [
@@ -42,9 +46,7 @@ export const CommunitySelector = () => {
             src={`http://localhost:5207/${row.original.photo}`}
             alt='Avatar'
           />
-          <AvatarFallback className='w-full h-full flex justify-center items-center'>
-            ?
-          </AvatarFallback>
+          <AvatarFallback className='w-full h-full flex justify-center items-center'></AvatarFallback>
         </Avatar>
       ),
     },
@@ -75,56 +77,56 @@ export const CommunitySelector = () => {
     },
   ];
 
+  const getRowSelection = () => {
+    const records: Record<string, boolean> = {};
+
+    communities?.forEach((_, index) => {
+      records[index.toString()] = true;
+    });
+
+    return records;
+  };
+
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     initialState: {
-      rowSelection: {
-        '0': true
-      }
-    }
+      rowSelection: getRowSelection(),
+    },
   });
 
   useEffect(() => {
-    const url = 'http://localhost:5207/api/peer';
-
-    const fetchData = () => {
-      fetch(url)
-        .then((res) => res.json())
-        .then((json) => {
-          setData(json);
-          setSelected([json[0]]);
-        })
-        .catch((err) => console.error('error:' + err));
-    };
-
-    fetchData();
-  }, [setSelected, table]);
+    if (communities.length == 0) setOpen(true);
+  }, [communities]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(e) => {
+        setSelected(
+          table.getSelectedRowModel().rows.flatMap((x) => x.original)
+        );
+        setOpen(e);
+      }}
+    >
       <DialogTrigger>
         <div className='h-7 relative'>
-          {table.getSelectedRowModel().rows.map((x, index) => {
-            const community = x.original;
-
-            return (
-              <Avatar
-                className='shadow-lg absolute rounded-full overflow-hidden h-7 w-7'
-                style={{
-                  left: `${index * 10}px`,
-                }}
-                key={index}
-              >
-                <AvatarImage
-                  src={`http://localhost:5207${community.photo}`}
-                  alt='Avatar'
-                />
-                <AvatarFallback>?</AvatarFallback>
-              </Avatar>
-            );
-          })}
+          {table.getSelectedRowModel().rows.map((x, index) => (
+            <Avatar
+              className='shadow-lg absolute rounded-full overflow-hidden h-7 w-7'
+              style={{
+                left: `${index * 10}px`,
+              }}
+              key={index}
+            >
+              <AvatarImage
+                src={`http://localhost:5207${x.original.photo}`}
+                alt='Avatar'
+              />
+              <AvatarFallback>?</AvatarFallback>
+            </Avatar>
+          ))}
         </div>
       </DialogTrigger>
       <DialogContent>

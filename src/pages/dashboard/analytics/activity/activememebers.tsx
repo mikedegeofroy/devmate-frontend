@@ -1,33 +1,39 @@
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IPeer } from '@/models/IPeer';
-import { useAnalyticsStore } from '@/store/analytics.store';
 import { useEffect, useState } from 'react';
+import { IPeer } from '@/models/IPeer';
 
 export const ActiveMembers = () => {
-  const communities = useAnalyticsStore((store) => store.communities);
+  // const [communities] = useAnalyticsStore((store) => [store.communities]);
   const [data, setData] = useState<IPeer[]>([]);
 
   useEffect(() => {
-    const url = `http://localhost:5207/api/UserActivityData?id=${communities[0].id}`;
+    const communities: IPeer[] = [];
 
-    const fetchData = () => {
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then((json) => {
-          setData(json);
-        })
-        .catch((err) => console.error('error:' + err));
+    const fetchData = async (id: number) => {
+      const url = `http://localhost:5207/api/analytics/user-activity?id=${id}`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              'bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiKzc5MjEzODc3NjYwIiwiZXhwIjoxNzA2MzgxMzY4fQ.J-5FR-bzje7EQUis_Q2uOakL1j-dkq0ZQy3Zp0qEBt9GorVWEKtbd0FfHlBaz-kORbc94WPIPkrt2UMHCkYbPw',
+          },
+        });
+
+        setData(await res.json());
+      } catch (err) {
+        console.error('error:' + err);
+      }
     };
 
-    if (communities.length > 0) fetchData();
-  }, [communities]);
+    communities.forEach((comm) => {
+      fetchData(comm.id);
+    });
+  });
 
   return (
     <Card className='flex flex-col justify-between row-span-2'>
