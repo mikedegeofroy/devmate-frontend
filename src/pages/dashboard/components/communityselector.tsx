@@ -16,7 +16,6 @@ import {
   TableCell,
   Table,
 } from '@/components/ui/table';
-import { usePeers } from '@/hooks/usePeers';
 import { IPeer } from '@/models/IPeer';
 import { useAnalyticsStore } from '@/store/analytics.store';
 import {
@@ -33,7 +32,9 @@ export const CommunitySelector = () => {
     state.setCommunities,
   ]);
 
-  const { data } = usePeers();
+  // const { data } = usePeers();
+  const data : IPeer[] = [] 
+
   const [open, setOpen] = useState(communities.length == 0);
 
   const columns: ColumnDef<IPeer>[] = [

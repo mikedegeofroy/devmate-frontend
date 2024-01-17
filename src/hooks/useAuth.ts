@@ -20,7 +20,9 @@ export const useAuth = () => {
 
     console.log(`logging in as ${username}`);
 
-    const url = `http://localhost:5207/api/auth/login`;
+    const url = `http://localhost:5207/api/auth/login?username=${encodeURIComponent(
+      username
+    )}`;
 
     const res = await fetch(url, {
       method: 'POST',
@@ -30,19 +32,62 @@ export const useAuth = () => {
     }).then((res) => res.json());
 
     console.log(res);
-
-    store.updateUser(username, res.token);
   };
 
-  const verify = async (verification: string) => {
+  const verifyCode = async (username: string, verification: string) => {
     if (authState != 'awaiting-verification')
       console.error('Incorrect usage of useAuth!');
     console.log(`verified code ${verification}`);
+
+    const url = `http://localhost:5207/api/auth/verify/code`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        secret: verification,
+      }),
+    }).then((res) => res.json());
+
+    console.log(res);
+
+    if (res.user) {
+      store.updateUser(res.user.username, res.user.token);
+    } else {
+      setAuthState('awaiting-password');
+    }
+  };
+
+  const verifyPassword = async (username: string, password: string) => {
+    if (authState != 'awaiting-password')
+      console.error('Incorrect usage of useAuth!');
+    console.log(`verified password ${password}`);
+
+    const url = `http://localhost:5207/api/auth/verify/password`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: username,
+        secret: password,
+      }),
+    }).then((res) => res.json());
+
+    console.log(res);
+
+    if (res.user) store.updateUser(res.user.username, res.user.token);
   };
 
   return {
     login,
-    verify,
+    verifyCode,
+    verifyPassword,
     state: authState,
     ...store,
   };

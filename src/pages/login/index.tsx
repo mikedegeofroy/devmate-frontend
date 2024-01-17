@@ -4,9 +4,19 @@ import { LoginState, useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+interface ILoginForms {
+  username: string;
+  code: string;
+  password: string;
+}
+
 export const Login = () => {
-  const [value, setValue] = useState<string>('');
-  const { login, verify, state } = useAuth();
+  const [value, setValue] = useState<ILoginForms>({
+    username: '',
+    code: '',
+    password: '',
+  });
+  const { login, verifyCode, verifyPassword, state, authenticated } = useAuth();
 
   const navigate = useNavigate();
 
@@ -26,13 +36,16 @@ export const Login = () => {
               autoCapitalize='none'
               autoCorrect='off'
               onChange={(e) => {
-                setValue(e.target.value);
+                setValue({
+                  username: e.target.value,
+                  code: value.code,
+                  password: value.password,
+                });
               }}
             />
             <Button
               onClick={() => {
-                login(value);
-                setValue('');
+                login(value.username);
               }}
             >
               Login
@@ -53,17 +66,49 @@ export const Login = () => {
               autoCapitalize='none'
               autoCorrect='off'
               onChange={(e) => {
-                setValue(e.target.value);
+                setValue({
+                  username: value.username,
+                  code: e.target.value,
+                  password: value.password,
+                });
               }}
             />
             <Button
               onClick={() => {
-                verify(value);
-                setValue('');
-                navigate('/dashboard');
+                verifyCode(value.username, value.code);
+                if (authenticated) navigate('/dashboard');
               }}
             >
               Verify
+            </Button>
+          </>
+        );
+      case 'awaiting-password':
+        return (
+          <>
+            <h1 className='text-2xl font-semibold tracking-tight'>Password</h1>
+            <p className='text-sm text-muted-foreground'>
+              Enter the password to your account
+            </p>
+            <Input
+              placeholder='super secret password'
+              autoCapitalize='none'
+              autoCorrect='off'
+              onChange={(e) => {
+                setValue({
+                  username: value.username,
+                  code: value.code,
+                  password: e.target.value,
+                });
+              }}
+            />
+            <Button
+              onClick={() => {
+                verifyPassword(value.username, value.password);
+                if (authenticated) navigate('/dashboard');
+              }}
+            >
+              Login
             </Button>
           </>
         );
