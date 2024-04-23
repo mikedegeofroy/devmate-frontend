@@ -13,7 +13,10 @@ export const ChatGpt = () => {
         <CardContent></CardContent>
       </Card>
       <CardContent>
-        <Textarea placeholder='Type your message here.' />
+        <Textarea
+          placeholder='Type your message here.'
+          className='resize-none'
+        />
       </CardContent>
     </Card>
   );

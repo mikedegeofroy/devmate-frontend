@@ -1,6 +1,6 @@
 import { Icons } from '@/components/icons';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { IDataPoint } from '@/models/IDataPoint';
+import { IDataPoint } from '@/types/IDataPoint';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
 

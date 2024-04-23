@@ -1,131 +1,87 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { LoginState, useAuth } from '@/hooks/useAuth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 
-interface ILoginForms {
-  username: string;
-  code: string;
-  password: string;
-}
-
 export const Login = () => {
-  const [value, setValue] = useState<ILoginForms>({
-    username: '',
-    code: '',
-    password: '',
+  const { login, verifyLogin, state } = useAuth();
+
+  const [code, setCode] = useState('');
+
+  useQuery({
+    queryKey: ['auth', code],
+    queryFn: () => verifyLogin(code!),
+    enabled: !!code,
+    refetchInterval: () => (state != 'awaiting-verification' ? false : 1000),
   });
-  const { login, verifyCode, verifyPassword, state, authenticated } = useAuth();
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (state == 'logged-in') {
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
+    }
+  }, [navigate, state]);
 
   const renderSwitch = (state: LoginState) => {
     switch (state) {
       case 'awaiting-login':
         return (
-          <>
-            <h1 className='text-2xl font-semibold tracking-tight'>
-              Sign-in with Telegram
-            </h1>
-            <p className='text-sm text-muted-foreground'>
-              Enter your email below to create your account
-            </p>
-            <Input
-              placeholder='@username'
-              autoCapitalize='none'
-              autoCorrect='off'
-              onChange={(e) => {
-                setValue({
-                  username: e.target.value,
-                  code: value.code,
-                  password: value.password,
-                });
-              }}
-            />
+          <div className='gap-5 flex flex-col'>
+            <div>
+              <h1 className='text-2xl font-semibold tracking-tight'>
+                Sign-in through Telegram
+              </h1>
+              <p className='text-sm text-muted-foreground w-72'>
+                Press on the button below to sign in thorugh our telegram bot.
+              </p>
+            </div>
             <Button
-              onClick={() => {
-                login(value.username);
+              className='w-full'
+              onClick={async () => {
+                const code = await login();
+                setCode(code);
+                window.open(
+                  `tg://resolve?domain=devm8bot&start=${code}`,
+                  '_blank'
+                );
               }}
             >
               Login
             </Button>
-          </>
+          </div>
         );
       case 'awaiting-verification':
         return (
-          <>
+          <div className='text-left'>
             <h1 className='text-2xl font-semibold tracking-tight'>
-              Verification Code
+              Awaiting verification
             </h1>
-            <p className='text-sm text-muted-foreground'>
-              We've sent your verification code to your telegram
+            <p className='text-sm text-muted-foreground w-72'>
+              We are waiting for you to complete the verification on our bot.
             </p>
-            <Input
-              placeholder='verification code'
-              autoCapitalize='none'
-              autoCorrect='off'
-              onChange={(e) => {
-                setValue({
-                  username: value.username,
-                  code: e.target.value,
-                  password: value.password,
-                });
-              }}
-            />
-            <Button
-              onClick={() => {
-                verifyCode(value.username, value.code);
-                if (authenticated) navigate('/dashboard');
-              }}
-            >
-              Verify
-            </Button>
-          </>
-        );
-      case 'awaiting-password':
-        return (
-          <>
-            <h1 className='text-2xl font-semibold tracking-tight'>Password</h1>
-            <p className='text-sm text-muted-foreground'>
-              Enter the password to your account
-            </p>
-            <Input
-              placeholder='super secret password'
-              autoCapitalize='none'
-              autoCorrect='off'
-              onChange={(e) => {
-                setValue({
-                  username: value.username,
-                  code: value.code,
-                  password: e.target.value,
-                });
-              }}
-            />
-            <Button
-              onClick={() => {
-                verifyPassword(value.username, value.password);
-                if (authenticated) navigate('/dashboard');
-              }}
-            >
-              Login
-            </Button>
-          </>
+          </div>
         );
       case 'logged-in':
         return (
-          <>
+          <div>
             <h1 className='text-2xl font-semibold tracking-tight'>
               You're all set!
             </h1>
-          </>
+            <p className='text-sm text-muted-foreground w-72'>
+              We will redirect you soon.
+            </p>
+          </div>
         );
     }
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
-      <div className='flex flex-col space-y-2 text-center'>
+    <div className='flex justify-center items-center h-[90vh]'>
+      <div className='flex flex-col space-y-2 h-[20vh]'>
         {renderSwitch(state)}
       </div>
     </div>

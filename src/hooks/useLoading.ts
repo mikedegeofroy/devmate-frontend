@@ -8,11 +8,9 @@ export const useLoading = () => {
 
   const setLoading = (state: boolean) => {
     setLoadingState(state);
-    console.log(data);
   };
 
   const notLoading = () => {
-    console.log(data);
     return data.every((x) => x === false);
   };
 

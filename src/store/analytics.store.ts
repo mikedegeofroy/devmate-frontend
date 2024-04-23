@@ -1,4 +1,4 @@
-import { IPeer } from '@/models/IPeer';
+import { IPeer } from '@/types/IPeer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -13,7 +13,6 @@ export const useAnalyticsStore = create<AnalyticsState>()(
       communities: [],
       setCommunities: (to) =>
         set(() => {
-          console.log(to);
           return { communities: to };
         }),
     }),

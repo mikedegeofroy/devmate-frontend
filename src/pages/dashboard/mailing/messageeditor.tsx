@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { IPeer } from '@/models/IPeer';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { IPeer } from '@/types/IPeer';
 
 interface IMessageEditorProps {
   recipients: IPeer[];
@@ -12,19 +13,20 @@ interface IMessageEditorProps {
 
 export const MessageEditor = (props: IMessageEditorProps) => {
   const [message, setMessage] = useState('');
+  const { token } = useAuth();
 
   const sendMessage = async (message: string) => {
-    const url = `http://localhost:5207/api/Mailing?message=${message}`;
+    const url = `http://localhost:5207/api/mailing/send?message=${message}`;
 
-    const response = await fetch(url, {
+    await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `bearer ${token}`,
       },
       body: JSON.stringify(props.recipients),
     });
 
-    console.log(response);
     toast('Sent!', {
       duration: 800,
     });

@@ -1,4 +1,4 @@
-import { IPeer } from '@/models/IPeer';
+import { IPeer } from '@/types/IPeer';
 import { useQuery } from 'react-query';
 import { useAuth } from './useAuth';
 
@@ -17,5 +17,7 @@ export const usePeers = () => {
     return await res.json();
   };
 
-  return useQuery<IPeer[], Error>('peers', fetchPeers);
+  return useQuery<IPeer[], Error>('peers', fetchPeers, {
+    refetchInterval: false,
+  });
 };

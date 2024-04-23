@@ -7,11 +7,11 @@ import { Trending } from './activity/trending';
 import { ChatGpt } from './gpt/chatgpt';
 import { ActiveMembers } from './activity/activememebers';
 import { useEffect, useState } from 'react';
-import { IAnalyticsData } from '@/models/IAnalyticsData';
-import { IPeer } from '@/models/IPeer';
+import { IAnalyticsData } from '@/types/IAnalyticsData';
+import { useAnalyticsStore } from '@/store/analytics.store';
 
 export const Analytics = (props: ITab) => {
-  // const [communities] = useAnalyticsStore((store) => [store.communities]);
+  const [communities] = useAnalyticsStore((store) => [store.communities]);
 
   const [data, setData] = useState<IAnalyticsData>({
     dataPoints: [],
@@ -19,8 +19,6 @@ export const Analytics = (props: ITab) => {
   });
 
   useEffect(() => {
-    const communities : IPeer[] = [];
-
     const fetchData = async (id: number) => {
       const url = `http://localhost:5207/api/analytics/peer-activity?id=${id}`;
 

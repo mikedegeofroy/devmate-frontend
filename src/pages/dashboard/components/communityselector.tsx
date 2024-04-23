@@ -16,7 +16,7 @@ import {
   TableCell,
   Table,
 } from '@/components/ui/table';
-import { IPeer } from '@/models/IPeer';
+import { IPeer } from '@/types/IPeer';
 import { useAnalyticsStore } from '@/store/analytics.store';
 import {
   ColumnDef,
@@ -24,7 +24,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export const CommunitySelector = () => {
   const [communities, setSelected] = useAnalyticsStore((state) => [
@@ -33,9 +33,9 @@ export const CommunitySelector = () => {
   ]);
 
   // const { data } = usePeers();
-  const data : IPeer[] = [] 
+  const data: IPeer[] = [];
 
-  const [open, setOpen] = useState(communities.length == 0);
+  const [open, setOpen] = useState(communities.length == 1);
 
   const columns: ColumnDef<IPeer>[] = [
     {
@@ -81,8 +81,8 @@ export const CommunitySelector = () => {
   const getRowSelection = () => {
     const records: Record<string, boolean> = {};
 
-    communities?.forEach((_, index) => {
-      records[index.toString()] = true;
+    communities?.forEach((community) => {
+      records[data?.indexOf(community).toString() ?? '0'] = true;
     });
 
     return records;
@@ -97,18 +97,23 @@ export const CommunitySelector = () => {
     },
   });
 
-  useEffect(() => {
-    if (communities.length == 0) setOpen(true);
-  }, [communities]);
-
   return (
     <Dialog
       open={open}
       onOpenChange={(e) => {
-        setSelected(
-          table.getSelectedRowModel().rows.flatMap((x) => x.original)
-        );
-        setOpen(e);
+        const selected = table
+          .getSelectedRowModel()
+          .rows.flatMap((x) => x.original);
+
+        if (open) {
+          setSelected(selected);
+        }
+
+        if (selected.length == 0) {
+          setOpen(true);
+        } else {
+          setOpen(e);
+        }
       }}
     >
       <DialogTrigger>

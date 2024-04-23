@@ -5,10 +5,11 @@ export interface AuthState {
   token: string;
   username: string;
   authenticated: boolean;
+  profilePicture: string;
 }
 
 interface Action {
-  updateUser: (username: string, token: string) => void;
+  updateUser: (username: string, profilePicture: string, token: string) => void;
 }
 
 export const useAuthStore = create<AuthState & Action>()(
@@ -16,9 +17,15 @@ export const useAuthStore = create<AuthState & Action>()(
     (set) => ({
       token: '',
       username: '',
+      profilePicture: '',
       authenticated: false as boolean,
-      updateUser: (username, token) => {
-        return set({ username, token, authenticated: true });
+      updateUser: (username, profilePicture, token) => {
+        return set({
+          username: username,
+          token: token,
+          profilePicture: profilePicture,
+          authenticated: true,
+        });
       },
     }),
     {

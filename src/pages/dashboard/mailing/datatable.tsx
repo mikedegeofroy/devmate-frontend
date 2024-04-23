@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { IPeer } from '@/models/IPeer';
+import { IPeer } from '@/types/IPeer';
 import { flexRender, Table as TableProp } from '@tanstack/react-table';
 
 interface IDataTableProps {

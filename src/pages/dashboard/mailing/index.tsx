@@ -5,14 +5,13 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { IPeer } from '@/models/IPeer';
+import { IPeer } from '@/types/IPeer';
 import { Checkbox } from '@/components/ui/checkbox';
 import { MessageEditor } from './messageeditor';
 import { DataTable } from './datatable';
 
 export const Mailing = (props: ITab) => {
-  // const { data } = useMembers();
-  const data : IPeer[] = []
+  const data: IPeer[] = [];
 
   const columns: ColumnDef<IPeer>[] = [
     {
